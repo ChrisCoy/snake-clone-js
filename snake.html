@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+        padding: 0;
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      body {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        gap: 1rem;
+        justify-content: center;
+        background: rgb(33, 46, 41);
+        min-height: 100vh;
+      }
+      td {
+        width: 30px;
+        height: 30px;
+        color: white;
+        border: rgba(255, 255, 255, 0.2) 1px solid;
+      }
+
+      table {
+        position: relative;
+      }
+
+      th:hover {
+        filter: opacity(0.9);
+      }
+
+      .play-game {
+        position: absolute;
+        visibility: visible;
+        opacity: 1;
+        border: 1px solid white;
+        background: linear-gradient(to left, #0f0, #0a0);
+        transition: all 1s ease-in-out;
+        bottom: 200px;
+        padding: 20px 200px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 26px;
+        color: white;
+        animation: floating infinite 2s alternate ease-in-out;
+        cursor: pointer;
+        outline: none;
+      }
+
+      .score {
+        position: relative;
+        font-size: 60px;
+        font-weight: 700;
+        color: white;
+      }
+
+      .score::after {
+        content: "";
+        position: absolute;
+        left: -60px;
+        top: 25%;
+        height: 40px;
+        width: 40px;
+        background: orange;
+      }
+
+      .disabled {
+        visibility: hidden;
+        opacity: 0;
+        transition: all 0.3s ease-in-out !important;
+      }
+
+      @keyframes floating {
+        0% {
+          transform: rotate(0) translateX(0);
+        }
+        50% {
+          transform: rotate(15deg) translateX(10px) translateY(15px) scale(1.2);
+        }
+        100% {
+          transform: rotate(-15deg) translateX(0px) translateY(0) scale(1);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <span class="score">0 Fruits</span>
+    <h1 style="color: white">
+      Made with 💜 by <a href="" style="color: blueviolet">ChrisCoy</a>
+    </h1>
+    <table>
+      <tbody></tbody>
+    </table>
+    <button class="play-game" onclick="startGame()">PLAY</button>
+
+    <script>
+      let fps = 7;
+      const SIZE = 20;
+      const pixels = [];
+      let snake = [{ posY: 10, posX: 10 }];
+      let pos = snake[0].posY * SIZE + snake[0].posX;
+      let isRunning = false;
+      let points = 0;
+
+      function createScreen() {
+        for (let i = 0; i < SIZE; i++) {
+          const tr = document.createElement("tr");
+          for (let j = 0; j < SIZE; j++) {
+            const td = document.createElement("td");
+            tr.appendChild(td);
+            pixels.push(td);
+          }
+          document.querySelector("tbody")?.appendChild(tr);
+        }
+        pixels[snake[0].posY * 20 + snake[0].posX].style.background = "green";
+      }
+      createScreen();
+
+      addEventListener("keydown", (e) => {
+        processInput(e.key);
+      });
+
+      function resetGame() {
+        fps = 7;
+        pixels.forEach((item) => (item.style.background = "none"));
+        snake = [{ posY: 10, posX: 10 }];
+        pos = snake[0].posY * SIZE + snake[0].posX;
+        pixels[snake[0].posY * 20 + snake[0].posX].style.background = "green";
+        isRunning = false;
+        points = 0;
+        document.querySelector(".play-game").classList.remove("disabled");
+        document.querySelector(".score").innerText = "0 Fruits";
+        createFruit();
+      }
+
+      createFruit();
+
+      let lastKeyPressed;
+      function processInput(key) {
+        switch (key) {
+          case "ArrowUp":
+            if (lastKeyPressed == "ArrowDown") break;
+            lastKeyPressed = key;
+            break;
+          case "ArrowDown":
+            if (lastKeyPressed == "ArrowUp") break;
+            lastKeyPressed = key;
+            break;
+          case "ArrowLeft":
+            if (lastKeyPressed == "ArrowRight") break;
+            lastKeyPressed = key;
+            break;
+          case "ArrowRight":
+            if (lastKeyPressed == "ArrowLeft") break;
+            lastKeyPressed = key;
+            break;
+          case "Enter":
+          case " ":
+            startGame();
+            break;
+        }
+      }
+
+      function createFruit() {
+        const fruitPos = Math.floor(Math.random() * (SIZE - 1) * (SIZE - 1));
+        if (pixels[fruitPos].style.background == "green") {
+          createFruit();
+        }
+        pixels[fruitPos].style.background = "orange";
+      }
+
+      function updateGame() {
+        const head = snake[snake.length - 1];
+        pos = head.posY * SIZE + head.posX;
+
+        switch (lastKeyPressed) {
+          case "ArrowUp":
+            if (head.posY > 0) {
+              snake.push({ posY: head.posY - 1, posX: head.posX });
+              pos = (head.posY - 1) * SIZE + head.posX;
+            } else {
+              snake.push({ posY: SIZE - 1, posX: head.posX });
+              pos = (SIZE - 1) * SIZE + head.posX;
+            }
+            break;
+          case "ArrowDown":
+            if (head.posY < SIZE - 1) {
+              snake.push({ posY: head.posY + 1, posX: head.posX });
+              pos = (head.posY + 1) * SIZE + head.posX;
+            } else {
+              snake.push({ posY: 0, posX: head.posX });
+              pos = head.posX;
+            }
+            break;
+          case "ArrowRight":
+            if (head.posX < SIZE - 1) {
+              snake.push({ posY: head.posY, posX: head.posX + 1 });
+              pos = head.posY * SIZE + head.posX + 1;
+            } else {
+              snake.push({ posY: head.posY, posX: 0 });
+              pos = head.posY * SIZE;
+            }
+            break;
+          case "ArrowLeft":
+            if (head.posX > 0) {
+              snake.push({ posY: head.posY, posX: head.posX - 1 });
+              pos = head.posY * SIZE + head.posX - 1;
+            } else {
+              snake.push({ posY: head.posY, posX: SIZE - 1 });
+              pos = head.posY * SIZE + SIZE - 1;
+            }
+            break;
+          default:
+            return;
+            break;
+        }
+
+        const tail = snake.shift();
+
+        pixels[tail.posY * SIZE + tail.posX].style.background = "none";
+
+        if (pixels[pos].style.background == "green") {
+          alert("voce perdeu, fraco!");
+          resetGame();
+        }
+
+        if (pixels[pos].style.background == "orange") {
+          createFruit();
+          snake.push({ posY: Math.floor(pos / SIZE), posX: pos % SIZE });
+          points++;
+          document.querySelector(".score").innerText = `${points} Fruits`;
+          fps++;
+        }
+
+        pixels[pos].style.background = "rgba(0,255,0,0.2)";
+        const snakeBody = snake[snake.length - 2];
+        if (snakeBody) {
+          pixels[snakeBody.posY * SIZE + snakeBody.posX].style.background = "green";
+        }
+      }
+
+      function startGame() {
+        document.querySelector(".play-game").classList.add("disabled");
+        lastKeyPressed = "ArrowRight";
+        isRunning = true;
+      }
+
+      function gameLoop() {
+        if (isRunning) {
+          updateGame();
+        }
+
+        setTimeout(() => {
+          return window.requestAnimationFrame(gameLoop);
+        }, 1000 / fps);
+      }
+
+      window.requestAnimationFrame(gameLoop);
+    </script>
+  </body>
+</html>
