@@ -192,6 +192,7 @@
 
         switch (lastKeyPressed) {
           case "ArrowUp":
+          case "w":
             if (head.posY > 0) {
               snake.push({ posY: head.posY - 1, posX: head.posX });
               pos = (head.posY - 1) * SIZE + head.posX;
@@ -201,6 +202,7 @@
             }
             break;
           case "ArrowDown":
+          case "s":
             if (head.posY < SIZE - 1) {
               snake.push({ posY: head.posY + 1, posX: head.posX });
               pos = (head.posY + 1) * SIZE + head.posX;
@@ -210,6 +212,7 @@
             }
             break;
           case "ArrowRight":
+          case "d":
             if (head.posX < SIZE - 1) {
               snake.push({ posY: head.posY, posX: head.posX + 1 });
               pos = head.posY * SIZE + head.posX + 1;
@@ -219,6 +222,7 @@
             }
             break;
           case "ArrowLeft":
+          case "a":
             if (head.posX > 0) {
               snake.push({ posY: head.posY, posX: head.posX - 1 });
               pos = head.posY * SIZE + head.posX - 1;
