@@ -106,7 +106,7 @@
       let fps = 7;
       const SIZE = 20;
       const pixels = [];
-      let snake = [{ posY: 10, posX: 10 }];
+      let snake = [{ posY: Math.floor(SIZE / 2), posX: Math.floor(SIZE / 2) }];
       let pos = snake[0].posY * SIZE + snake[0].posX;
       let isRunning = false;
       let points = 0;
@@ -121,7 +121,7 @@
           }
           document.querySelector("tbody")?.appendChild(tr);
         }
-        pixels[snake[0].posY * 20 + snake[0].posX].style.background = "green";
+        pixels[snake[0].posY * SIZE + snake[0].posX].style.background = "green";
       }
       createScreen();
 
@@ -132,9 +132,9 @@
       function resetGame() {
         fps = 7;
         pixels.forEach((item) => (item.style.background = "none"));
-        snake = [{ posY: 10, posX: 10 }];
+        snake = [{ posY: Math.floor(SIZE / 2), posX: Math.floor(SIZE / 2) }];
         pos = snake[0].posY * SIZE + snake[0].posX;
-        pixels[snake[0].posY * 20 + snake[0].posX].style.background = "green";
+        pixels[snake[0].posY * SIZE + snake[0].posX].style.background = "green";
         isRunning = false;
         points = 0;
         document.querySelector(".play-game").classList.remove("disabled");
@@ -148,19 +148,27 @@
       function processInput(key) {
         switch (key) {
           case "ArrowUp":
+          case "w":
             if (lastKeyPressed == "ArrowDown") break;
+            if (lastKeyPressed == "s") break;
             lastKeyPressed = key;
             break;
           case "ArrowDown":
+          case "s":
             if (lastKeyPressed == "ArrowUp") break;
+            if (lastKeyPressed == "w") break;
             lastKeyPressed = key;
             break;
           case "ArrowLeft":
+          case "a":
             if (lastKeyPressed == "ArrowRight") break;
+            if (lastKeyPressed == "d") break;
             lastKeyPressed = key;
             break;
           case "ArrowRight":
+          case "d":
             if (lastKeyPressed == "ArrowLeft") break;
+            if (lastKeyPressed == "a") break;
             lastKeyPressed = key;
             break;
           case "Enter":
